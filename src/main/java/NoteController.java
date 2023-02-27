@@ -20,4 +20,9 @@ public class NoteController {
         database.deleteNote(ctx.queryParam("id"));
         ctx.status(200);
     }
+
+    public void updateNote(Context ctx){
+        database.updateNote(gson.fromJson(ctx.body(), Note.class));
+        ctx.status(200);
+    }
 }

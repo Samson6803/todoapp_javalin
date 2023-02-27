@@ -14,6 +14,7 @@ public class Main {
                 post(controller::insertNote);
                 get(controller::getNotes);
                 delete(controller::deleteNote);
+                put(controller::updateNote);
            });
         });
 

@@ -72,5 +72,16 @@ public class Database {
         }
     }
 
+    public void updateNote(Note note){
+        Connection connection = connectToDB();
+        String query = sqlParser.updateNoteQuery(note.getName(), note.getDescription(), note.getAuthor(), note.getID());
+        try{
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
 
 }
