@@ -1,10 +1,3 @@
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonKey;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
-
-import java.util.UUID;
-
 public class Note {
     private String name;
     private String description;

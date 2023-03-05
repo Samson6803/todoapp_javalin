@@ -1,7 +1,6 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 public class Database {
     private String user = "postgres";
     private String password = "postgresql";
@@ -33,28 +32,45 @@ public class Database {
     }
     public void insertNote(Note note) {
         Connection connection = connectToDB();
-        String query = sqlParser.insertNoteQuery(note.getName(), note.getDescription(), note.getAuthor());
+        String query = sqlParser.insertNoteQuery();
         try{
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, note.getName());
+            statement.setString(2, note.getDescription());
+            statement.setString(3, note.getAuthor());
+            statement.executeUpdate();
         } catch (SQLException e){
             e.printStackTrace();
         }
     }
 
-    public List<Note> getNotes(String id){
-        Connection connection = connectToDB();
-        String query = id == null ? sqlParser.getNotesQuery() : sqlParser.getNotesQuery(id);
+    public Note getNotes(String id){
+        String query = sqlParser.getNoteQuery();
+        ResultSet resultSet = null;
+        Note note = null;
+        try(Connection connection = connectToDB()){
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1,Integer.parseInt(id));
+            resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                note = getNote(resultSet);
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return note;
+    }
+
+    public List<Note> getNotes(){
+        String query = sqlParser.getNotesQuery();
         ResultSet resultSet = null;
         List<Note> notes = new ArrayList<>();
-        try{
+        try(Connection connection = connectToDB()){
             Statement statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
             while (resultSet.next()){
-                Note note = getNote(resultSet);
-                notes.add(note);
+                notes.add(getNote(resultSet));
             }
-
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -62,26 +78,27 @@ public class Database {
     }
 
     public void deleteNote(String id){
-        Connection connection = connectToDB();
-        String query = sqlParser.deleteNoteQuery(id);
-        try{
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
+        String query = sqlParser.deleteNoteQuery();
+        try(Connection connection = connectToDB()){
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1,Integer.parseInt(id));
+            statement.executeUpdate();
         } catch (SQLException e){
             e.printStackTrace();
         }
     }
 
-    public void updateNote(Note note){
-        Connection connection = connectToDB();
-        String query = sqlParser.updateNoteQuery(note.getName(), note.getDescription(), note.getAuthor(), note.getID());
-        try{
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
+    public void updateNote(Note note, String id){
+        String query = sqlParser.updateNoteQuery();
+        try(Connection connection = connectToDB();){
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, note.getName());
+            statement.setString(2, note.getDescription());
+            statement.setString(3, note.getAuthor());
+            statement.setInt(4, Integer.parseInt(id));
+            statement.executeUpdate();
         }catch (SQLException e){
             e.printStackTrace();
         }
     }
-
-
 }
