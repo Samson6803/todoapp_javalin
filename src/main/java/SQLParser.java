@@ -17,4 +17,11 @@ public class SQLParser {
                 "description = ?," +
                 "author = ? WHERE id = ?";
     }
+    public String addUser(){
+        return "INSERT INTO accounts(name, hashedPassword, email) VALUES(? ,? ,?);";
+    }
+
+    public String getUser(){
+        return "SELECT * FROM accounts WHERE name = ?;";
+    }
 }

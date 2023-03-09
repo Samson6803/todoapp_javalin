@@ -1,3 +1,5 @@
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,19 +31,6 @@ public class Database {
             e.printStackTrace();
         }
         return note;
-    }
-    public void insertNote(Note note) {
-        Connection connection = connectToDB();
-        String query = sqlParser.insertNoteQuery();
-        try{
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, note.getName());
-            statement.setString(2, note.getDescription());
-            statement.setString(3, note.getAuthor());
-            statement.executeUpdate();
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
     }
 
     public Note getNotes(String id){
@@ -77,6 +66,19 @@ public class Database {
         return notes;
     }
 
+    public void insertNote(Note note) {
+        String query = sqlParser.insertNoteQuery();
+        try(Connection connection = connectToDB()){
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, note.getName());
+            statement.setString(2, note.getDescription());
+            statement.setString(3, note.getAuthor());
+            statement.executeUpdate();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
     public void deleteNote(String id){
         String query = sqlParser.deleteNoteQuery();
         try(Connection connection = connectToDB()){
@@ -90,7 +92,7 @@ public class Database {
 
     public void updateNote(Note note, String id){
         String query = sqlParser.updateNoteQuery();
-        try(Connection connection = connectToDB();){
+        try(Connection connection = connectToDB()){
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, note.getName());
             statement.setString(2, note.getDescription());
@@ -100,5 +102,40 @@ public class Database {
         }catch (SQLException e){
             e.printStackTrace();
         }
+    }
+
+    public void addUser(User user){
+        String hashedPassword = BCrypt.withDefaults().hashToString(BCrypt.MIN_COST, user.getPassword().toCharArray());
+        String query = sqlParser.addUser();
+        try(Connection connection = connectToDB()){
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, user.getName());
+            statement.setString(2, hashedPassword);
+            statement.setString(3, user.getEmail());
+            statement.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public Boolean checkUser(User user){
+        String query = sqlParser.getUser();
+        ResultSet rs = null;
+        String hashedPassword = null;
+        BCrypt.Result result = null;
+        try(Connection connection = connectToDB()){
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, user.getName());
+            rs = statement.executeQuery();
+
+            if(rs.next()){
+                hashedPassword = rs.getString("hashedPassword");
+                result = BCrypt.verifyer().verify(user.getPassword().toCharArray(), hashedPassword);
+                return result.verified;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }
