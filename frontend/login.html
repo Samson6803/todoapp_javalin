@@ -1,0 +1,40 @@
+<!DOCTYPE>
+<html lang="pl">
+<head>
+    <title>Login</title>
+    <script src="script.js"></script>
+</head>
+<body>
+    <form id="myForm">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name">
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password">
+        <input type="submit">
+    </form>
+
+    <script>
+        const myForm = document.getElementById('myForm');
+
+        myForm.addEventListener('submit', event =>{
+            event.preventDefault();
+
+            const formData = new FormData(myForm);
+            const data = Object.fromEntries(formData);
+
+            fetch("login", {
+                method: 'post',
+                body: JSON.stringify(data),
+                headers:{
+                    'Content-Type':'application/json'
+                }
+            }).then(response =>{
+                if (response.ok) {
+                    window.location.href = response.url;
+                }
+            });
+        })
+    </script>
+</body>
+</html>

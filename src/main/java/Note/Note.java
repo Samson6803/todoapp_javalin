@@ -1,26 +1,22 @@
+package Note;
+
 public class Note {
-    private String name;
+    private String title;
     private String description;
-    private String author;
     private int id;
 
-    public Note(String name, String description, String author, int id) {
-        this.name = name;
+    public Note(String title, String description, int id) {
+        this.title = title;
         this.description = description;
-        this.author = author;
         this.id = id;
     }
 
     public String getName() {
-        return name;
+        return title;
     }
 
     public String getDescription() {
         return description;
-    }
-
-    public String getAuthor() {
-        return author;
     }
 
     public int getID() {return id;}

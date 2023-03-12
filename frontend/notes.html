@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notes</title>
+</head>
+<body>
+    <h1>Your notes</h1>
+    <button onclick="window.location.href = 'addNote.html'">Add new note</button>
+    <div id="notes"></div>
+
+    <script>
+        window.onload = getNotes;
+
+        function getNotes(){
+            fetch("/notes", {
+                method: 'get'
+            }).then(response =>{
+                return response.json();
+            }).then(data =>{
+                data.forEach(note =>{
+                    const html = "<div id='"+ note.id +"'><p id='title'>" + note.title +"</p><br><p id='description'>" + note.description + "</p>" +
+                        "<button onclick='deleteNote(this)'>Delete</button>" +
+                        "<button onclick='changeNote(this)'>Options</button></div>";
+
+                    document.getElementById('notes').insertAdjacentHTML('beforeend', html);
+                })
+            }).catch(error =>{
+                console.log(error);
+            });
+        }
+
+        function changeNote(element){
+            let noteID = element.parentNode.id;
+            window.location.href = "changeNote.html?id="+noteID;
+        }
+        function deleteNote(element){
+            let divID = element.parentNode.id;
+            let url = "/notes/"+divID;
+            element.parentNode.remove();
+
+            fetch(url,{
+                method:'delete'
+            }).catch(error =>{
+                console.log(error);
+            });
+        }
+    </script>
+</body>
+</html>

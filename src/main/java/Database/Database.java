@@ -1,13 +1,22 @@
-import at.favre.lib.crypto.bcrypt.BCrypt;
+package Database;
 
+import Note.Note;
+import User.User;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+
 public class Database {
-    private String user = "postgres";
-    private String password = "postgresql";
-    private String url = "jdbc:postgresql://localhost:5432/data";
-    private SQLParser sqlParser = new SQLParser();
+    private final String user;
+    private final String password;
+    private final String url;
+
+    public Database(String user, String password, String url) {
+        this.user = user;
+        this.password = password;
+        this.url = url;
+    }
 
     private Connection connectToDB(){
         Connection connection = null;
@@ -22,11 +31,10 @@ public class Database {
     private Note getNote(ResultSet resultSet){
         Note note = null;
         try{
-            String name = resultSet.getString("name");
+            String name = resultSet.getString("title");
             String description = resultSet.getString("description");
-            String author = resultSet.getString("author");
             int ID = resultSet.getInt("id");
-            note = new Note(name, description, author, ID);
+            note = new Note(name, description, ID);
         }catch (SQLException e){
             e.printStackTrace();
         }
@@ -34,7 +42,7 @@ public class Database {
     }
 
     public Note getNotes(String id){
-        String query = sqlParser.getNoteQuery();
+        String query = SQLParser.getNoteQuery();
         ResultSet resultSet = null;
         Note note = null;
         try(Connection connection = connectToDB()){
@@ -51,7 +59,7 @@ public class Database {
     }
 
     public List<Note> getNotes(){
-        String query = sqlParser.getNotesQuery();
+        String query = SQLParser.getNotesQuery();
         ResultSet resultSet = null;
         List<Note> notes = new ArrayList<>();
         try(Connection connection = connectToDB()){
@@ -66,13 +74,13 @@ public class Database {
         return notes;
     }
 
-    public void insertNote(Note note) {
-        String query = sqlParser.insertNoteQuery();
+    public void insertNote(Note note, int userID) {
+        String query = SQLParser.insertNoteQuery();
         try(Connection connection = connectToDB()){
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, note.getName());
             statement.setString(2, note.getDescription());
-            statement.setString(3, note.getAuthor());
+            statement.setInt(3, userID);
             statement.executeUpdate();
         } catch (SQLException e){
             e.printStackTrace();
@@ -80,7 +88,7 @@ public class Database {
     }
 
     public void deleteNote(String id){
-        String query = sqlParser.deleteNoteQuery();
+        String query = SQLParser.deleteNoteQuery();
         try(Connection connection = connectToDB()){
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1,Integer.parseInt(id));
@@ -91,13 +99,12 @@ public class Database {
     }
 
     public void updateNote(Note note, String id){
-        String query = sqlParser.updateNoteQuery();
+        String query = SQLParser.updateNoteQuery();
         try(Connection connection = connectToDB()){
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, note.getName());
             statement.setString(2, note.getDescription());
-            statement.setString(3, note.getAuthor());
-            statement.setInt(4, Integer.parseInt(id));
+            statement.setInt(3, Integer.parseInt(id));
             statement.executeUpdate();
         }catch (SQLException e){
             e.printStackTrace();
@@ -106,7 +113,7 @@ public class Database {
 
     public void addUser(User user){
         String hashedPassword = BCrypt.withDefaults().hashToString(BCrypt.MIN_COST, user.getPassword().toCharArray());
-        String query = sqlParser.addUser();
+        String query = SQLParser.addUser();
         try(Connection connection = connectToDB()){
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, user.getName());
@@ -118,8 +125,8 @@ public class Database {
         }
     }
 
-    public Boolean checkUser(User user){
-        String query = sqlParser.getUser();
+    public boolean checkUser(User user){
+        String query = SQLParser.getUser();
         ResultSet rs = null;
         String hashedPassword = null;
         BCrypt.Result result = null;
@@ -137,5 +144,26 @@ public class Database {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public User getUser(String name){
+        String query = SQLParser.getUser();
+        User user = null;
+        try(Connection connection = connectToDB()){
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, name);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()){
+                int userId = rs.getInt("id");
+                String userName = rs.getString("name");
+                String userEmail = rs.getString("email");
+                String hashedPassword = rs.getString("hashedPassword");
+                user = new User(userName, hashedPassword, userEmail, userId);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return user;
     }
 }

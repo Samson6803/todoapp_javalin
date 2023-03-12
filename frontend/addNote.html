@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add note</title>
+</head>
+<body>
+  <form id="myForm">
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title">
+
+    <label for="description">Description</label>
+    <input type="text" name="description" id="description">
+
+    <input type="submit">
+  </form>
+
+  <script>
+    const myForm = document.getElementById('myForm');
+
+    myForm.addEventListener('submit',event =>{
+      event.preventDefault();
+
+      const formData = new FormData(myForm);
+      const data = Object.fromEntries(formData);
+
+      console.log(JSON.stringify(data));
+      console.log('dupa');
+      fetch('/notes',{
+        method:'post',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify(data)
+      }).then(response =>{
+        if (response.ok){
+          window.location.href = 'notes.html';
+        }
+      }).catch(error =>{
+        console.log(error);
+      });
+    });
+  </script>
+</body>
+</html>

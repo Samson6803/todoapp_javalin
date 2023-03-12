@@ -1,3 +1,5 @@
+package User;
+
 public class User {
     private String name;
     private String password;
@@ -25,5 +27,17 @@ public class User {
 
     public int getId() {
         return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
