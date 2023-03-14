@@ -19,6 +19,8 @@ public class Note {
         return description;
     }
 
-    public int getID() {return id;}
+    public int getID() {
+        return id;
+    }
 
 }

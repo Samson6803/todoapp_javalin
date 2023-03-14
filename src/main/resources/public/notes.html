@@ -3,23 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Notes</title>
+    <script src="redirectNotLoggedUser.js"></script>
+    <link rel="stylesheet" href="notes.css">
 </head>
 <body>
     <h1>Your notes</h1>
-    <button onclick="window.location.href = 'addNote.html'">Add new note</button>
+    <div id="buttons">
+        <button onclick="logout()" id="logoutButton">Logout</button>
+        <button onclick="window.location.href = 'addNote.html'" id="addNoteButton">Add new note</button>
+    </div>
+
     <div id="notes"></div>
 
     <script>
+        fetch('api/user/me')
+            .then(response =>{
+                if (!response.ok){
+                    window.location.href = "login.html";
+                }
+            })
+
         window.onload = getNotes;
 
         function getNotes(){
-            fetch("/notes", {
+            fetch("api/notes", {
                 method: 'get'
             }).then(response =>{
                 return response.json();
             }).then(data =>{
                 data.forEach(note =>{
-                    const html = "<div id='"+ note.id +"'><p id='title'>" + note.title +"</p><br><p id='description'>" + note.description + "</p>" +
+                    const html = "<div id='"+ note.id +"' name='note'><p id='title'>" + note.title +"</p><br><p id='description'>" + note.description + "</p>" +
                         "<button onclick='deleteNote(this)'>Delete</button>" +
                         "<button onclick='changeNote(this)'>Options</button></div>";
 
@@ -36,7 +49,7 @@
         }
         function deleteNote(element){
             let divID = element.parentNode.id;
-            let url = "/notes/"+divID;
+            let url = "api/notes/"+divID;
             element.parentNode.remove();
 
             fetch(url,{
@@ -44,6 +57,17 @@
             }).catch(error =>{
                 console.log(error);
             });
+        }
+
+        function logout(){
+            fetch('api/user/logout')
+                .then(response =>{
+                    if (response.ok){
+                        window.location.href = "login.html";
+                    }
+                }).catch(error =>{
+                    console.log(error);
+            })
         }
     </script>
 </body>

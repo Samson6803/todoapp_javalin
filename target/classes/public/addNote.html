@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Add note</title>
+    <script src="redirectNotLoggedUser.js"></script>
 </head>
 <body>
   <form id="myForm">
@@ -10,7 +11,7 @@
     <input type="text" name="title" id="title">
 
     <label for="description">Description</label>
-    <input type="text" name="description" id="description">
+    <input type="text" name="description" id="description" contenteditable="true">
 
     <input type="submit">
   </form>
@@ -24,14 +25,16 @@
       const formData = new FormData(myForm);
       const data = Object.fromEntries(formData);
 
-      console.log(JSON.stringify(data));
-      console.log('dupa');
-      fetch('/notes',{
+      fetch('api/notes',{
         method:'post',
         headers:{
           'Content-Type':'application/json'
         },
         body: JSON.stringify(data)
+      }).then(response =>{
+        if (response.ok){
+          window.location.href = 'notes.html';
+        }
       }).catch(error =>{
         console.log(error);
       });

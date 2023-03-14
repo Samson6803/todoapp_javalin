@@ -1,0 +1,27 @@
+button{
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: rgb(255,255,255);
+    background-color: rgb(20,10,128);
+    text-align: center;
+}
+h1{
+    text-align: center;
+    font-family: Verdana;
+}
+#buttons{
+    text-align: center;
+}
+button{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+[name="note"]{
+    margin-top: 5px;
+    border: solid rgb(0, 0, 0);
+}
+#notes{
+    display: flex;
+    justify-content: space-around;
+}

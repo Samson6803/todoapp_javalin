@@ -10,17 +10,17 @@ public class NoteController implements CrudHandler {
     Database database;
     Gson gson;
 
-    public NoteController(Database database, Gson gson){
+    public NoteController(Database database, Gson gson) {
         this.database = database;
         this.gson = gson;
     }
 
     @Override
     public void create(@NotNull Context ctx) {
-            Integer userID = ctx.sessionAttribute("userID");
-            if (userID != null){
-                database.insertNote(gson.fromJson(ctx.body(), Note.class), userID);
-            }
+        String userID = ctx.cookie("userID");
+        if (userID != null) {
+            database.insertNote(gson.fromJson(ctx.body(), Note.class), Integer.parseInt(userID));
+        }
     }
 
     @Override

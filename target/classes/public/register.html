@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
+    <script src="redirectLoggedUser.js"></script>
 </head>
 <body>
 
@@ -27,14 +28,14 @@
       const formData = new FormData(myForm);
       const data = Object.fromEntries(formData);
 
-      fetch('/register',{
+      fetch('api/user/register',{
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(data)
       }).then(response => {
-        window.location.href = response.url;
+        location.href = 'login.html';
       });
     });
   </script>

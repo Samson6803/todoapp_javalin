@@ -7,8 +7,9 @@ import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
+
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Database database = new Database("postgres", "postgresql", "jdbc:postgresql://localhost:5432/data");
         Gson gson = new Gson();
 
@@ -16,37 +17,40 @@ public class Main {
         UserController userController = new UserController(database, gson);
 
         Javalin app = Javalin.create(javalinConfig -> {
-            javalinConfig.staticFiles.add("/public", Location.CLASSPATH);
             javalinConfig.jetty.sessionHandler(SessionUtil::sqlSessionHandler);
+            javalinConfig.staticFiles.add("/public", Location.CLASSPATH);
         }).start();
 
         app.before(ctx -> {
-            Integer userID = ctx.sessionAttribute("userID");
-            if (userID == null){
-                // userID 0 means guest
-                ctx.sessionAttribute("userID", 0);
-                userController.setGuestRole(ctx);
+            String isUserLogged = ctx.sessionAttribute("isUserLogged");
+            if (isUserLogged == null) {
+                ctx.sessionAttribute("isUserLogged", "false");
             }
         });
 
-        app.routes(()-> {
-           path("api/", ()->{
-               path("notes/{noteID}", ()->{
-                   crud(noteController);
-               });
+        app.routes(() -> {
+            path("api/", () -> {
+                path("notes/{noteID}", () -> {
+                    crud(noteController);
+                });
+                path("user/", () -> {
+                    path("login", () -> {
+                        post(userController::logUser);
+                    });
 
-               path("login", ()->{
-                   post(userController::logUser);
-               });
+                    path("register", () -> {
+                        post(userController::registerUser);
+                    });
 
-               path("register", ()->{
-                   post(userController::addUser);
-               });
+                    path("logout", () -> {
+                        get(userController::logoutUser);
+                    });
+                    path("me", () -> {
+                        get(userController::userInfo);
+                    });
+                });
 
-               path("logout", ()->{
-                   get(userController::logoutUser);
-               });
-           });
+            });
         });
     }
 }

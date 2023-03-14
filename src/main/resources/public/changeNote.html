@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Change note</title>
+    <script src="redirectNotLoggedUser.js"></script>
 </head>
 <body>
     <form id="myForm">
@@ -22,7 +23,7 @@
 
         let myForm = document.getElementById('myForm');
 
-        fetch('/notes/'+noteID)
+        fetch('api/notes/'+noteID)
             .then(response =>{
                 return response.json();
             }).then(data=>{
@@ -36,7 +37,7 @@
             const formData = new FormData(myForm);
             const data = Object.fromEntries(formData);
 
-            fetch('/notes/'+noteID,{
+            fetch('api/notes/'+noteID,{
                 method:'patch',
                 headers:{
                     'Content-Type':'application/json'
