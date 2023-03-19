@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:alpine
+    ports:
+      - 5557:5432
+    volumes:
+      - ./sql/createTable.sql:/docker-entrypoint-initdb.d/createTable.sql
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgresql
+      - POSTGRES_DB=data
+
+volumes:
+  postgres-data:
+

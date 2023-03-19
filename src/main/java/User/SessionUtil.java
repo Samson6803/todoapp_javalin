@@ -3,7 +3,7 @@ package User;
 import org.eclipse.jetty.server.session.*;
 
 public class SessionUtil {
-    private static String url = "jdbc:postgresql://localhost:5432/jetty?user=postgres&password=postgresql";
+    private static String url = "jdbc:postgresql://localhost:5557/jetty?user=postgres&password=postgresql";
     private static String driver = "org.postgresql.Driver";
 
     public static SessionHandler sqlSessionHandler() {

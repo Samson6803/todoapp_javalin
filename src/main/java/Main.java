@@ -10,7 +10,7 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Main {
     public static void main(String[] args) {
-        Database database = new Database("postgres", "postgresql", "jdbc:postgresql://localhost:5432/data");
+        Database database = new Database("postgres", "postgresql", "jdbc:postgresql://localhost:5557/data");
         Gson gson = new Gson();
 
         NoteController noteController = new NoteController(database, gson);

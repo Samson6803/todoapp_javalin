@@ -28,6 +28,7 @@ public class NoteController implements CrudHandler {
         database.deleteNote(s);
     }
 
+    //TODO: getall should return only logged users notes
     @Override
     public void getAll(@NotNull Context ctx) {
         ctx.json(gson.toJson(database.getNotes()));
