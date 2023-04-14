@@ -42,13 +42,14 @@ public class Database {
         return note;
     }
 
-    public Note getNotes(String id) {
+    public Note getNotes(String userID, String id) {
         String query = SQLParser.getNoteQuery();
         ResultSet resultSet = null;
         Note note = null;
         try (Connection connection = connectToDB()) {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, Integer.parseInt(id));
+            statement.setInt(2, Integer.parseInt(userID));
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 note = makeNote(resultSet);
@@ -59,13 +60,14 @@ public class Database {
         return note;
     }
 
-    public List<Note> getNotes() {
+    public List<Note> getNotes(String userId) {
         String query = SQLParser.getNotesQuery();
         ResultSet resultSet = null;
         List<Note> notes = new ArrayList<>();
         try (Connection connection = connectToDB()) {
-            Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery(query);
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, Integer.parseInt(userId));
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 notes.add(makeNote(resultSet));
             }

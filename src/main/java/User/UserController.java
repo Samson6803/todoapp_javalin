@@ -27,7 +27,6 @@ public class UserController {
         } else {
             ctx.status(HttpStatus.METHOD_NOT_ALLOWED);
         }
-
     }
 
     public void logUser(Context ctx) {
@@ -46,7 +45,6 @@ public class UserController {
         } else {
             ctx.status(HttpStatus.METHOD_NOT_ALLOWED);
         }
-
     }
 
     public void logoutUser(Context ctx) {
@@ -62,7 +60,6 @@ public class UserController {
             String cookie = ctx.cookie("userID");
             if (cookie != null) {
                 User user = database.getUserInfo(Integer.parseInt(cookie));
-                System.out.println(gson.toJson(user));
                 ctx.json(gson.toJson(user));
                 ctx.status(HttpStatus.OK);
             } else {

@@ -6,11 +6,11 @@ public class SQLParser {
     }
 
     public static String getNotesQuery() {
-        return "SELECT * FROM note";
+        return "SELECT * FROM note WHERE users_id = ?";
     }
 
     public static String getNoteQuery() {
-        return "SELECT * FROM note WHERE id = ?";
+        return "SELECT * FROM note WHERE id = ? AND users_id = ?";
     }
 
     public static String deleteNoteQuery() {

@@ -6,6 +6,8 @@ import io.javalin.apibuilder.CrudHandler;
 import io.javalin.http.Context;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 public class NoteController implements CrudHandler {
     Database database;
     Gson gson;
@@ -24,23 +26,26 @@ public class NoteController implements CrudHandler {
     }
 
     @Override
-    public void delete(@NotNull Context ctx, @NotNull String s) {
-        database.deleteNote(s);
+    public void delete(@NotNull Context ctx, @NotNull String userId) {
+        database.deleteNote(userId);
     }
 
-    //TODO: getall should return only logged users notes
     @Override
     public void getAll(@NotNull Context ctx) {
-        ctx.json(gson.toJson(database.getNotes()));
+        String userID = ctx.cookie("userID");
+        if(userID != null) {
+            ctx.json(gson.toJson(database.getNotes(userID)));
+        }
     }
 
     @Override
-    public void getOne(@NotNull Context ctx, @NotNull String s) {
-        ctx.json(gson.toJson(database.getNotes(s)));
+    public void getOne(@NotNull Context ctx, @NotNull String noteId) {
+        String userID = ctx.cookie("userID");
+        ctx.json(gson.toJson(database.getNotes(userID, noteId)));
     }
 
     @Override
-    public void update(@NotNull Context ctx, @NotNull String s) {
-        database.updateNote(gson.fromJson(ctx.body(), Note.class), s);
+    public void update(@NotNull Context ctx, @NotNull String noteId) {
+        database.updateNote(gson.fromJson(ctx.body(), Note.class), noteId);
     }
 }

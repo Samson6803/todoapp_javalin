@@ -25,6 +25,4 @@ public class SessionUtil {
         jdbcSessionDataStoreFactory.setDatabaseAdaptor(databaseAdaptor);
         return jdbcSessionDataStoreFactory;
     }
-
-
 }
