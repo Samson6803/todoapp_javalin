@@ -8,10 +8,9 @@ services:
     volumes:
       - ./sql/createTable.sql:/docker-entrypoint-initdb.d/createTable.sql
       - postgres-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgresql
-      - POSTGRES_DB=data
+    env_file:
+      - ./env/postgres.env
+
 
 volumes:
   postgres-data:
